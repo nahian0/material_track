@@ -31,27 +31,26 @@ class MaterialPurchaseScreen extends StatelessWidget {
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search',
-                suffixIcon: const Icon(Icons.search), // Move the icon to the end
+                suffixIcon: const Icon(Icons.search),
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade400), // Gray border color
+                  borderSide: BorderSide(color: Colors.grey.shade400),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade400), // Gray border color when enabled
+                  borderSide: BorderSide(color: Colors.grey.shade400),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.blue.shade400), // Blue border color when focused (optional)
+                  borderSide: BorderSide(color: Colors.blue.shade400),
                 ),
               ),
               onChanged: (value) {
-                // Optional: implement search logic
+               // controller.searchMaterials(value);
               },
-            )
-
+            ),
           ),
         ),
       ),
@@ -70,6 +69,7 @@ class MaterialPurchaseScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: SingleChildScrollView(
+                  controller: controller.scrollController,
                   scrollDirection: Axis.vertical,
                   child: Column(
                     children: [
@@ -92,8 +92,7 @@ class MaterialPurchaseScreen extends StatelessWidget {
                       ...List.generate(controller.materials.length, (index) {
                         final item = controller.materials[index];
                         final isEven = index % 2 == 0;
-                        final rowColor =
-                        isEven ? Colors.grey.shade200 : Colors.white;
+                        final rowColor = isEven ? Colors.grey.shade200 : Colors.white;
 
                         return Container(
                           color: rowColor,
@@ -103,9 +102,7 @@ class MaterialPurchaseScreen extends StatelessWidget {
                               const _DataCell('Admin', width: 100),
                               _DataCell(item.store, width: 120),
                               _DataCell(item.runnersName, width: 140),
-                              _DataCell(
-                                  '\$${item.amount.toStringAsFixed(2)}',
-                                  width: 100),
+                              _DataCell(item.amount.toStringAsFixed(2), width: 100),
                               _DataCell(item.cardNumber, width: 120),
                               _DataCell(item.transactionDate, width: 120),
                             ],
@@ -117,28 +114,13 @@ class MaterialPurchaseScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Load More Button
-            if (controller.hasMorePages.value &&
-                !controller.isLoading.value)
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: ElevatedButton(
-                  onPressed: controller.loadNextPage,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0052FE),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text("Load More"),
-                ),
-              ),
-            if (controller.isLoading.value)
+            // Show loading indicator when fetching next page
+            if (controller.isLoadingNextPage.value)
               const Padding(
                 padding: EdgeInsets.all(12),
                 child: CircularProgressIndicator(),
               ),
+            // Load More Button
           ],
         );
       }),
@@ -152,6 +134,7 @@ class MaterialPurchaseScreen extends StatelessWidget {
     );
   }
 }
+
 
 class _HeaderCell extends StatelessWidget {
   final String text;
