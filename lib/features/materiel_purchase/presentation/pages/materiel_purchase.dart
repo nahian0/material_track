@@ -48,18 +48,18 @@ class MaterialPurchaseScreen extends StatelessWidget {
                 ),
               ),
               onChanged: (value) {
-               // controller.searchMaterials(value);
+                controller.searchMaterials(value); // Trigger search when text changes
               },
             ),
           ),
         ),
       ),
       body: Obx(() {
-        if (controller.isLoading.value && controller.materials.isEmpty) {
+        if (controller.isLoading.value && controller.filteredMaterials.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (controller.materials.isEmpty) {
+        if (controller.filteredMaterials.isEmpty) {
           return const Center(child: Text("No materials available."));
         }
 
@@ -89,8 +89,8 @@ class MaterialPurchaseScreen extends StatelessWidget {
                         ),
                       ),
                       // Data Rows
-                      ...List.generate(controller.materials.length, (index) {
-                        final item = controller.materials[index];
+                      ...List.generate(controller.filteredMaterials.length, (index) {
+                        final item = controller.filteredMaterials[index];
                         final isEven = index % 2 == 0;
                         final rowColor = isEven ? Colors.grey.shade200 : Colors.white;
 
@@ -120,7 +120,6 @@ class MaterialPurchaseScreen extends StatelessWidget {
                 padding: EdgeInsets.all(12),
                 child: CircularProgressIndicator(),
               ),
-            // Load More Button
           ],
         );
       }),
@@ -134,7 +133,6 @@ class MaterialPurchaseScreen extends StatelessWidget {
     );
   }
 }
-
 
 class _HeaderCell extends StatelessWidget {
   final String text;

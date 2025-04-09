@@ -12,10 +12,12 @@ class MaterialPurchaseController extends GetxController {
   MaterialPurchaseController(this.getMaterials);
 
   var materials = <MaterialPurchase>[].obs;
+  var filteredMaterials = <MaterialPurchase>[].obs;  // For storing filtered list
   var isLoading = false.obs;
   var page = 1;
   var hasMorePages = true.obs;
   var isLoadingNextPage = false.obs;
+  var searchQuery = ''.obs; // Store the search query
 
   @override
   void onInit() {
@@ -33,12 +35,10 @@ class MaterialPurchaseController extends GetxController {
   }
 
   void _scrollListener() {
-    // Check if the scroll position is within a small threshold of the bottom
     if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200) {
       loadNextPage();
     }
   }
-
 
   void fetchMaterials() async {
     if (!hasMorePages.value) return;
@@ -52,6 +52,7 @@ class MaterialPurchaseController extends GetxController {
         Get.snackbar("End", "No more materials available.");
       } else {
         materials.addAll(result);
+        filteredMaterials.addAll(result); // Initially, show all materials
       }
     } catch (e) {
       Get.snackbar("Error", "Failed to load materials");
@@ -69,9 +70,24 @@ class MaterialPurchaseController extends GetxController {
     }
   }
 
+  void searchMaterials(String query) {
+    searchQuery.value = query;
+    if (query.isEmpty) {
+      filteredMaterials.value = materials; // If query is empty, show all materials
+    } else {
+      filteredMaterials.value = materials
+          .where((material) =>
+      material.lineItemName.toLowerCase().contains(query.toLowerCase()) ||
+          material.store.toLowerCase().contains(query.toLowerCase()) ||
+          material.runnersName.toLowerCase().contains(query.toLowerCase()) ||
+          material.cardNumber.toLowerCase().contains(query.toLowerCase()) ||
+          material.transactionDate.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    }
+  }
+
   void logout() {
     GetStorage().erase();
     Get.offAll(() => LoginPage());
   }
 }
-
