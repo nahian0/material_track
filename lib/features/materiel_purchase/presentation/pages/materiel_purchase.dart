@@ -13,7 +13,7 @@ class MaterialPurchaseScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: const Text("Material Purchase")),
+        title: const Text("Material Purchase"),
         backgroundColor: Colors.white10,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -28,7 +28,7 @@ class MaterialPurchaseScreen extends StatelessWidget {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
-            padding: const EdgeInsets.all(15.0),
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search',
@@ -49,81 +49,84 @@ class MaterialPurchaseScreen extends StatelessWidget {
                 ),
               ),
               onChanged: (value) {
-                controller.searchMaterials(value); // Trigger search when text changes
+                controller.searchMaterials(value);
               },
             ),
           ),
         ),
       ),
-      body: Obx(() {
-        if (controller.isLoading.value && controller.filteredMaterials.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
-        }
 
-        if (controller.filteredMaterials.isEmpty) {
-          return const Center(child: Text("No materials available."));
-        }
+      body: SafeArea(  // This ensures the body starts right after the AppBar
+        child: Obx(() {
+          if (controller.isLoading.value && controller.filteredMaterials.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        return Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+          if (controller.filteredMaterials.isEmpty) {
+            return const Center(child: Text("No materials available."));
+          }
+
+          return Column(
+            children: [
+              Expanded(
                 child: SingleChildScrollView(
-                  controller: controller.scrollController,
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                    children: [
-                      // Header Row
-                      Container(
-                        color: const Color(0xFF0052FE),
-                        child: Row(
-                          children: const [
-                            _HeaderCell('SL', width: 60),
-                            _HeaderCell('User Role', width: 100),
-                            _HeaderCell('Store', width: 120),
-                            _HeaderCell("Runner's Name", width: 140),
-                            _HeaderCell('Amount', width: 100),
-                            _HeaderCell('Card No.', width: 120),
-                            _HeaderCell('Date', width: 120),
-                          ],
-                        ),
-                      ),
-                      // Data Rows
-                      ...List.generate(controller.filteredMaterials.length, (index) {
-                        final item = controller.filteredMaterials[index];
-                        final isEven = index % 2 == 0;
-                        final rowColor = isEven ? Colors.grey.shade200 : Colors.white;
-
-                        return Container(
-                          color: rowColor,
+                  scrollDirection: Axis.horizontal,
+                  child: SingleChildScrollView(
+                    controller: controller.scrollController,
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      children: [
+                        // Header Row
+                        Container(
+                          color: const Color(0xFF0052FE),
                           child: Row(
-                            children: [
-                              _DataCell('${index + 1}', width: 60),
-                              const _DataCell('Admin', width: 100),
-                              _DataCell(item.store, width: 120),
-                              _DataCell(item.runnersName, width: 140),
-                              _DataCell(item.amount.toStringAsFixed(2), width: 100),
-                              _DataCell(item.cardNumber, width: 120),
-                              _DataCell(item.transactionDate, width: 120),
+                            children: const [
+                              _HeaderCell('SL', width: 60),
+                              _HeaderCell('User Role', width: 100),
+                              _HeaderCell('Store', width: 120),
+                              _HeaderCell("Runner's Name", width: 140),
+                              _HeaderCell('Amount', width: 100),
+                              _HeaderCell('Card No.', width: 120),
+                              _HeaderCell('Date', width: 120),
                             ],
                           ),
-                        );
-                      }),
-                    ],
+                        ),
+                        // Data Rows
+                        ...List.generate(controller.filteredMaterials.length, (index) {
+                          final item = controller.filteredMaterials[index];
+                          final isEven = index % 2 == 0;
+                          final rowColor = isEven ? Colors.grey.shade200 : Colors.white;
+
+                          return Container(
+                            color: rowColor,
+                            child: Row(
+                              children: [
+                                _DataCell('${index + 1}', width: 60),
+                                const _DataCell('Admin', width: 100),
+                                _DataCell(item.store, width: 120),
+                                _DataCell(item.runnersName, width: 140),
+                                _DataCell(item.amount.toStringAsFixed(2), width: 100),
+                                _DataCell(item.cardNumber, width: 120),
+                                _DataCell(item.transactionDate, width: 120),
+                              ],
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            // Show loading indicator when fetching next page
-            if (controller.isLoadingNextPage.value)
-              const Padding(
-                padding: EdgeInsets.all(12),
-                child: CircularProgressIndicator(),
-              ),
-          ],
-        );
-      }),
+              // Show loading indicator when fetching next page
+              if (controller.isLoadingNextPage.value)
+                const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: CircularProgressIndicator(),
+                ),
+            ],
+          );
+        }),
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF0052FE),
         foregroundColor: Colors.white,
@@ -134,11 +137,11 @@ class MaterialPurchaseScreen extends StatelessWidget {
           });
         },
       ),
-
-
     );
   }
 }
+
+
 
 class _HeaderCell extends StatelessWidget {
   final String text;

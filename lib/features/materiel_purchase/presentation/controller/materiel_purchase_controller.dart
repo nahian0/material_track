@@ -53,7 +53,7 @@ class MaterialPurchaseController extends GetxController {
 
       if (result.isEmpty) {
         hasMorePages.value = false;
-        Get.snackbar("End", "No more materials available.");
+       // Get.snackbar("End", "No more materials available.");
       } else {
         materials.addAll(result);
         filteredMaterials.addAll(result);
