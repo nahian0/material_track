@@ -4,6 +4,7 @@ import '../../../../core/services/api_client.dart';
 import '../../data/datasource/material_purchase_remote_datasource.dart';
 import '../../data/repositories/material_purchase_repository_impl.dart';
 import '../../domain/repositories/material_purchase_repository.dart'; // Import the repository interface
+import '../../domain/usecases/add_materials.dart';
 import '../../domain/usecases/get_materials.dart';
 import '../controller/materiel_purchase_controller.dart';
 
@@ -24,8 +25,9 @@ class MaterialPurchaseBinding extends Bindings {
 
     // Register the GetMaterials use case
     Get.lazyPut(() => GetMaterialPurchases(Get.find()));
+    Get.lazyPut(() => AddMaterialPurchase(Get.find()));
 
     // Register the MaterialPurchaseController with GetMaterials injected
-    Get.lazyPut(() => MaterialPurchaseController(Get.find()));
+    Get.lazyPut(() => MaterialPurchaseController(Get.find(),Get.find()));
   }
 }

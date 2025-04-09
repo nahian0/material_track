@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/utils/dialog_util.dart';
 import '../controller/materiel_purchase_controller.dart';
 import '../../domain/entities/material_purchase.dart';
 
@@ -125,11 +126,16 @@ class MaterialPurchaseScreen extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF0052FE),
+        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
         onPressed: () {
-          // Navigate to add material page
+          DialogUtil.showMaterialPurchaseDialog(context, (requestModel) async {
+            await controller.postMaterialPurchase(requestModel);
+          });
         },
       ),
+
+
     );
   }
 }

@@ -3,21 +3,25 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../login/presentation/pages/login_page.dart';
 import '../../domain/entities/material_purchase.dart';
+import '../../domain/usecases/add_materials.dart';
 import '../../domain/usecases/get_materials.dart';
+import '../../data/models/material_purchase_request_model.dart';
 
 class MaterialPurchaseController extends GetxController {
   final GetMaterialPurchases getMaterials;
+  final AddMaterialPurchase addMaterialPurchase;
+
   late ScrollController scrollController;
 
-  MaterialPurchaseController(this.getMaterials);
+  MaterialPurchaseController(this.getMaterials, this.addMaterialPurchase);
 
   var materials = <MaterialPurchase>[].obs;
-  var filteredMaterials = <MaterialPurchase>[].obs;  // For storing filtered list
+  var filteredMaterials = <MaterialPurchase>[].obs;
   var isLoading = false.obs;
   var page = 1;
   var hasMorePages = true.obs;
   var isLoadingNextPage = false.obs;
-  var searchQuery = ''.obs; // Store the search query
+  var searchQuery = ''.obs;
 
   @override
   void onInit() {
@@ -52,7 +56,7 @@ class MaterialPurchaseController extends GetxController {
         Get.snackbar("End", "No more materials available.");
       } else {
         materials.addAll(result);
-        filteredMaterials.addAll(result); // Initially, show all materials
+        filteredMaterials.addAll(result);
       }
     } catch (e) {
       Get.snackbar("Error", "Failed to load materials");
@@ -65,15 +69,13 @@ class MaterialPurchaseController extends GetxController {
     if (hasMorePages.value) {
       page++;
       fetchMaterials();
-    } else {
-      //Get.snackbar("End", "No more pages available");
     }
   }
 
   void searchMaterials(String query) {
     searchQuery.value = query;
     if (query.isEmpty) {
-      filteredMaterials.value = materials; // If query is empty, show all materials
+      filteredMaterials.value = materials;
     } else {
       filteredMaterials.value = materials
           .where((material) =>
@@ -89,5 +91,19 @@ class MaterialPurchaseController extends GetxController {
   void logout() {
     GetStorage().erase();
     Get.offAll(() => LoginPage());
+  }
+
+  Future<void> postMaterialPurchase(MaterialPurchaseRequestModel request) async {
+    try {
+      await addMaterialPurchase(request);
+      Get.snackbar("Success", "Material purchase added");
+      page = 1;
+      materials.clear();
+      filteredMaterials.clear();
+      hasMorePages.value = true;
+      fetchMaterials();
+    } catch (e) {
+      Get.snackbar("Error", "Failed to add material purchase");
+    }
   }
 }
